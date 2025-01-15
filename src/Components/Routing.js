@@ -1,24 +1,24 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom';
 import { RouterProvider } from 'react-router-dom';
-import MainComponent from './Main Component/MainComponent';
-import SignUp from './User/SignUp';
-import SignIn from './User/SignIn';
+import Body from './Body';
+import Login from './Login';
+import Browse from './Browse';
 
 const Routing = () => {
     const appRouter = createBrowserRouter([
         {
             path:"/",
-            element: <MainComponent />
+            element: <Body />
         },
         {
-            path:"/in",
-            element:<SignUp/>
+          path:"/login",
+          element:<Login />
         },
         {
-            path:"/login",
-            element:<SignIn/>
-        }
+            path:"/Browse",
+            element:<Browse/>
+        },
 
     ])
   return (
