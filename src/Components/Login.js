@@ -1,5 +1,10 @@
 import React, { useRef, useState } from 'react'
 import { validateEmail, validatePassword } from '../utils/Validate'
+import {  createUserWithEmailAndPassword,onAuthStateChanged,signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from '../utils/firebase';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addUser, removeUser } from "../utils/userSlice"
 
 const Login = () => {
   const [toggle,setToggle] = useState(false)
@@ -7,15 +12,19 @@ const Login = () => {
     email:"",
     password:""
   })
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
+  const displayName = useRef(null)
   const email = useRef(null) 
   const password = useRef(null) 
 
   const toggleSignUp = ()=>{
     setToggle(!toggle)
+    setErrorMessage({})
   }
+
   const handleOnFormSubmit = (e)=>{
-    e.preventDefault()
     const emailErrorMessage = validateEmail(email.current.value)
     const passwordErrorMessage = validatePassword(password.current.value)
 
@@ -25,15 +34,60 @@ const Login = () => {
     if(passwordErrorMessage){
       setErrorMessage(prevErrorMessage =>({...prevErrorMessage,password:passwordErrorMessage}))
     }
+    if(emailErrorMessage != null && passwordErrorMessage != null) return
+
+    // SignUp && SignIn logic
+    if(toggle){
+      //SignUp logic
+      console.log(displayName,"object")
+      createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+      .then((userCredential) => {
+      const user = userCredential.user;
+      updateProfile(user, {
+        displayName: displayName.current.value, photoURL: "https://example.com/jane-q-user/profile.jpg"
+      }).then(() => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const {uid,email,displayName,photoURL} = auth.currentUser;
+            dispatch(addUser({ uid:uid, email:email, displayName:displayName,photoUrl:photoURL}))
+          } else {
+            dispatch(removeUser());
+          }
+        })
+        navigate('/Browse')
+      }).catch((error) => {
+
+      });
+
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // setErrorMessage(prevErrorMessage=>({...prevErrorMessage,}))
+  })
+  }else{
+      //SignIn logic
+      signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+      .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      navigate('/Browse')
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
+    }
   }
+
   return (
     <div className='relative text-white' >
-        <form onSubmit={handleOnFormSubmit} className='absolute bg-black w-3/12 flex flex-col p-12 mx-auto right-0 left-0 rounded-lg bg-opacity-60 md:max-w-2xl'>
+        <form onSubmit={(e)=>e.preventDefault()} className='absolute bg-black w-3/12 flex flex-col p-12 mx-auto right-0 left-0 rounded-lg bg-opacity-60 md:max-w-2xl'>
           <h1 className='font-bold py-2 my-2 text-3xl ' >
             {!toggle ? "Sign In" : "Sign Up"}
           </h1>
           {toggle&&
-            <input type='text' placeholder='Name'className='p-4 my-4 rounded-lg bg-gray-900 border-solid border-[1px] border-gray-600' />}
+            <input ref={displayName} type='text' placeholder='Name'className='p-4 my-4 rounded-lg bg-gray-900 border-solid border-[1px] border-gray-600' />}
           <input ref={email} type='text' placeholder='Email or Mobile Number'className='p-4 my-4 rounded-lg bg-gray-900 border-solid border-[1px] border-gray-600' />
             { errorMessage.email &&
               <span className='text-red-600' >
@@ -45,7 +99,7 @@ const Login = () => {
               <span className='text-red-600'>
                 {errorMessage.password}
               </span>}
-          <button className='p-4 my-2 bg-red-600 rounded-lg' >
+          <button className='p-4 my-2 bg-red-600 rounded-lg' onClick={handleOnFormSubmit} >
             {!toggle?"Sign In":"Sign Up"}
           </button>
           <h4 className='text-center' >Forgot password?</h4>

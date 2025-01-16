@@ -6,14 +6,11 @@ import Login from './Login';
 import Browse from './Browse';
 
 const Routing = () => {
+
     const appRouter = createBrowserRouter([
         {
             path:"/",
             element: <Body />
-        },
-        {
-          path:"/login",
-          element:<Login />
         },
         {
             path:"/Browse",
@@ -21,6 +18,7 @@ const Routing = () => {
         },
 
     ])
+
   return (
     <div>
       <RouterProvider router={appRouter} />
