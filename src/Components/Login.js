@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react'
 import { validateEmail, validatePassword } from '../utils/Validate'
 import {  createUserWithEmailAndPassword,onAuthStateChanged,signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from '../utils/firebase';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addUser, removeUser } from "../utils/userSlice"
+import { NETFLIX_USER_AVATAR } from '../utils/constants';
 
 const Login = () => {
   const [toggle,setToggle] = useState(false)
@@ -12,7 +12,6 @@ const Login = () => {
     email:"",
     password:""
   })
-  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const displayName = useRef(null)
@@ -39,12 +38,11 @@ const Login = () => {
     // SignUp && SignIn logic
     if(toggle){
       //SignUp logic
-      console.log(displayName,"object")
       createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
       .then((userCredential) => {
       const user = userCredential.user;
       updateProfile(user, {
-        displayName: displayName.current.value, photoURL: "https://example.com/jane-q-user/profile.jpg"
+        displayName: displayName.current.value, photoURL:NETFLIX_USER_AVATAR
       }).then(() => {
         onAuthStateChanged(auth, (user) => {
           if (user) {
@@ -54,7 +52,6 @@ const Login = () => {
             dispatch(removeUser());
           }
         })
-        navigate('/Browse')
       }).catch((error) => {
 
       });
@@ -63,6 +60,7 @@ const Login = () => {
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    console.log(errorCode,"-",errorMessage)
     // setErrorMessage(prevErrorMessage=>({...prevErrorMessage,}))
   })
   }else{
@@ -71,17 +69,17 @@ const Login = () => {
       .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
-      navigate('/Browse')
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    console.log(errorCode,"-",errorMessage)
   });
     }
   }
 
   return (
-    <div className='relative text-white' >
+    <div className='relative text-white p-40' >
         <form onSubmit={(e)=>e.preventDefault()} className='absolute bg-black w-3/12 flex flex-col p-12 mx-auto right-0 left-0 rounded-lg bg-opacity-60 md:max-w-2xl'>
           <h1 className='font-bold py-2 my-2 text-3xl ' >
             {!toggle ? "Sign In" : "Sign Up"}
