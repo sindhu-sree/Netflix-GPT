@@ -1,0 +1,6 @@
+projectKey=netfli-gpt
+serverUrl=http://localhost:9000
+serverVersion=25.1.0.102122
+dashboardUrl=http://localhost:9000/dashboard?id=netfli-gpt
+ceTaskId=749897c5-fe08-4d8e-86e9-b1207d9aac0f
+ceTaskUrl=http://localhost:9000/api/ce/task?id=749897c5-fe08-4d8e-86e9-b1207d9aac0f
