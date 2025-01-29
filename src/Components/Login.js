@@ -60,7 +60,6 @@ const Login = () => {
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorCode,"-",errorMessage)
     // setErrorMessage(prevErrorMessage=>({...prevErrorMessage,}))
   })
   }else{
@@ -73,7 +72,6 @@ const Login = () => {
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorCode,"-",errorMessage)
   });
     }
   }

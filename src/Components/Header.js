@@ -45,14 +45,14 @@ const Header = () => {
   },[])
 
   return (
-    <div className='absolute w-screen px-36 py-2 bg-gradient-to-b from-black flex justify-between' >
+    <div className='fixed w-screen px-36 py-2 bg-gradient-to-b from-black flex justify-between' >
         <div>
             <img className="w-56" src={NETFLIX_LOGO_URL} alt="logo-image" />
         </div>
         <div className="flex justify-end items-center" >
-          <button className="text-white bg-purple-800 p-2 rounded-lg mx-5" onClick={handleGptToggle} > {showGptSearch? lang[language].homePage : lang[language].gptSearch } </button>
+            {user&&<button className="text-white bg-purple-800 p-2 rounded-lg mx-5" onClick={handleGptToggle} > {showGptSearch? lang[language].homePage : lang[language].gptSearch } </button>}
             <select name="language" id="language" onChange={(e)=>handleLanguageChange(e)} className="p-2 w-25 h-10 rounded-lg bg-black text-white border-gray-700 my-5" >
-              {SUPPORTED_LANGUAGES.map(lang=><option value= {lang.identifier} > {lang.name} </option>)}
+              {SUPPORTED_LANGUAGES.map(lang=><option key={lang.identifier}  value= {lang.identifier} > {lang.name} </option>)}
             </select>
             {user&&
               <div className="flex justify-center items-center p-2 mx-2 my-2">
